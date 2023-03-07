@@ -3,9 +3,25 @@ using UnityEngine;
 
 public class CoinManager : MonoBehaviour
 {
-    private Coin[] _coinList;
+    public static CoinManager Instance;
+
+    private int _coins = 0;
+    private GameObject[] _coinList;
 
     public event Action CoinsUpdated;
+    public int Coins { get => _coins;}
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
     private void Start()
     {
@@ -14,24 +30,28 @@ public class CoinManager : MonoBehaviour
 
     private void Prepare()
     {
-        GameObject.FindGameObjectsWithTag("Coin");
+        _coinList = GameObject.FindGameObjectsWithTag("Coin");
+        SubscribeToCoins(_coinList);
     }
 
     private void AddCoin()
     {
+        _coins++;
         CoinsUpdated?.Invoke();
     }
 
-    private void RemoveCoin(int amaunt)
+    public void RemoveCoin(int amount)
     {
         CoinsUpdated?.Invoke();
+        _coins = _coins - amount;
     }
 
-    private void SubscribeToCoins(Coin[] coinList)
+    private void SubscribeToCoins(GameObject[] coinList)
     {
-        foreach(Coin coin in coinList)
+        foreach(GameObject coin in coinList)
         {
-            coin.OnCoinCollected += AddCoin;
+            Coin coinScript = coin.GetComponent<Coin>();
+            coinScript.OnCoinCollected += AddCoin;
         }
     }
 }
