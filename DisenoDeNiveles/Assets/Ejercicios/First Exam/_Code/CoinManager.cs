@@ -42,8 +42,8 @@ public class CoinManager : MonoBehaviour
 
     public void RemoveCoin(int amount)
     {
-        CoinsUpdated?.Invoke();
         _coins = _coins - amount;
+        CoinsUpdated?.Invoke();
     }
 
     private void SubscribeToCoins(GameObject[] coinList)
